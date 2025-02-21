@@ -766,7 +766,7 @@ def stop_recording(camera_num):
             return jsonify(success=False, message="Camera not found.")
         
         # Zatrzymaj zapisywanie filmu (zatrzymanie encodera)
-        camera.camera.stop_encoder(encoder_video)  # Zatrzymuje nagrywanie do pliku, ale nie streaming
+        #camera.camera.stop_encoder(encoder_video)  # Zatrzymuje nagrywanie do pliku, ale nie streaming
         return jsonify(success=True, message="Recording stopped successfully.")
             
     except Exception as e:
