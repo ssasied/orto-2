@@ -30,6 +30,7 @@ global_cameras = Picamera2.global_camera_info()
 # global_cameras = [global_cameras[0]]
 encoder_video = None
 
+recording_output = None
 # Get the directory of the current script
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # Define the path to the camera-config.json file
@@ -720,7 +721,6 @@ def capture_photo(camera_num):
         return jsonify(success=False, message=str(e))
     
 
-recording_output = None
 
 @app.route('/start_recording_<int:camera_num>', methods=['POST'])
 def start_recording(camera_num):
