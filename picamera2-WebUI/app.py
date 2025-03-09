@@ -708,7 +708,6 @@ def save_config_file(camera_num):
 
 
 
-camera
 @app.route('/capture_photo_<int:camera_num>', methods=['POST'])
 def capture_photo(camera_num):
     try:
