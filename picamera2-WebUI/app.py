@@ -128,6 +128,7 @@ class StreamingOutput(io.BufferedIOBase):
         self.buffer = io.BytesIO()
         self.condition = Condition()
 
+
     def write(self, buf):
         # Clear the buffer before writing the new frame
         self.buffer.seek(0)
@@ -242,6 +243,9 @@ class CameraObject:
         elif encoder == "JpegEncoder":
             self.camera.start_recording(JpegEncoder(), output=FileOutput(self.output))
             time.sleep(1)
+
+        output2 = FileOutput()
+        encoder.output = [FileOutput(self.output), output2]
         print(f'\nStarted Stream with encoder: {encoder} \n')
 
     def stop_streaming(self):
@@ -702,6 +706,9 @@ def save_config_file(camera_num):
         print(f'\nERROR:\n{e}\n')
         return jsonify(success=False, error=str(e))
 
+
+
+camera
 @app.route('/capture_photo_<int:camera_num>', methods=['POST'])
 def capture_photo(camera_num):
     try:
@@ -713,6 +720,8 @@ def capture_photo(camera_num):
     except Exception as e:
         return jsonify(success=False, message=str(e))
     
+
+
 
 @app.route('/start_recording_<int:camera_num>', methods=['POST'])
 def start_recording(camera_num):
@@ -743,10 +752,12 @@ def start_recording(camera_num):
         # Generowanie unikalnej nazwy pliku z timestampem
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_path = os.path.join(save_directory, f"recording_camera_{camera_num}_{timestamp}.mjpeg")
-        
+
         # Rozpocznij nagrywanie
         encoder_video = MJPEGEncoder()
         logging.info(f"Starting recording to: {output_path}")
+
+
         camera.camera.start_recording(encoder_video, FileOutput(output_path))
         
         logging.info(f"Recording started successfully. File saved to: {output_path}")
