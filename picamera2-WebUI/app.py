@@ -244,8 +244,7 @@ class CameraObject:
             self.camera.start_recording(JpegEncoder(), output=FileOutput(self.output))
             time.sleep(1)
 
-        output2 = FileOutput()
-        encoder.output = [FileOutput(self.output), output2]
+
         print(f'\nStarted Stream with encoder: {encoder} \n')
 
     def stop_streaming(self):
@@ -721,24 +720,26 @@ def capture_photo(camera_num):
         return jsonify(success=False, message=str(e))
     
 
-
+recording_output = None
 
 @app.route('/start_recording_<int:camera_num>', methods=['POST'])
 def start_recording(camera_num):
+    global recording_output
+
     try:
         # Pobierz obiekt kamery
         camera = cameras.get(camera_num)
         if not camera:
             return jsonify(success=False, message="Camera not found.")
-        
+
         # Określ katalog zapisu
         save_directory = "/home/kuklok/Desktop/Ortofotomap/picamera2-WebUI/static/gallery"
-        
+
         # Sprawdź, czy katalog istnieje; jeśli nie, utwórz go
         if not os.path.exists(save_directory):
             os.makedirs(save_directory)
             logging.info(f"Directory created: {save_directory}")
-        
+
         # Zapisz testowy obraz
         test_image_path = os.path.join(save_directory, "test_image.jpg")
         try:
@@ -749,17 +750,23 @@ def start_recording(camera_num):
         except Exception as e:
             logging.error(f"Failed to capture test image: {e}")
 
+
+        encoder = camera.camera.encoder
         # Generowanie unikalnej nazwy pliku z timestampem
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_path = os.path.join(save_directory, f"recording_camera_{camera_num}_{timestamp}.mjpeg")
 
         # Rozpocznij nagrywanie
-        encoder_video = MJPEGEncoder()
+        # encoder_video = MJPEGEncoder()
         logging.info(f"Starting recording to: {output_path}")
 
+        recording_output = FileOutput(output_path)
 
-        camera.camera.start_recording(encoder_video, FileOutput(output_path))
-        
+        encoder.output.append(recording_output)
+        recording_output.start()
+
+        #camera.camera.start_recording(encoder_video, FileOutput(output_path))
+
         logging.info(f"Recording started successfully. File saved to: {output_path}")
         return jsonify(success=True, message=f"Recording started successfully. File: {output_path}")
     except Exception as e:
@@ -770,6 +777,7 @@ def start_recording(camera_num):
     
 @app.route('/stop_recording_<int:camera_num>', methods=['POST'])
 def stop_recording(camera_num):
+    global recording_output
     try:
         # Pobierz obiekt kamery
         camera = cameras.get(camera_num)
@@ -777,7 +785,10 @@ def stop_recording(camera_num):
             return jsonify(success=False, message="Camera not found.")
         
         # Zatrzymaj zapisywanie filmu (zatrzymanie encodera)
-        camera.camera.stop_encoder(encoder_video)  # Zatrzymuje nagrywanie do pliku, ale nie streaming
+        #camera.camera.stop_encoder(encoder_video)  # Zatrzymuje nagrywanie do pliku, ale nie streaming
+
+        recording_output.stop()
+        camera.camera.encoder.remove(recording_output)
         return jsonify(success=True, message="Recording stopped successfully.")
             
     except Exception as e:
