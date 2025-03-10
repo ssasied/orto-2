@@ -758,7 +758,9 @@ def start_recording(camera_num):
 
         recording_output = FileOutput(output_path)
         encoder = list(camera.camera._encoders)[0]
-        encoder.output.add(recording_output)
+        output2 = encoder.output
+        encoder.output = [output2, recording_output]
+        #encoder.output.add(recording_output)
         recording_output.start()
 
         #camera.camera.start_recording(encoder_video, FileOutput(output_path))
