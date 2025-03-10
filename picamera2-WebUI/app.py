@@ -749,8 +749,6 @@ def start_recording(camera_num):
         except Exception as e:
             logging.error(f"Failed to capture test image: {e}")
 
-
-        encoder = camera.camera.encoder
         # Generowanie unikalnej nazwy pliku z timestampem
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         output_path = os.path.join(save_directory, f"recording_camera_{camera_num}_{timestamp}.mjpeg")
