@@ -786,7 +786,7 @@ def stop_recording(camera_num):
         #camera.camera.stop_encoder(encoder_video)  # Zatrzymuje nagrywanie do pliku, ale nie streaming
 
         recording_output.stop()
-        encoder = camera.camera._encoders[0]
+        #encoder = camera.camera._encoders[0]
         encoder.output.remove(recording_output)
         return jsonify(success=True, message="Recording stopped successfully.")
             
