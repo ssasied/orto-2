@@ -757,7 +757,7 @@ def start_recording(camera_num):
         # encoder_video = MJPEGEncoder()
 
         recording_output = FileOutput(output_path)
-        encoder = camera.camera._encoders[0]
+        encoder = list(camera.camera._encoders)[0]
         encoder.output.add(recording_output)
         recording_output.start()
 
@@ -786,7 +786,7 @@ def stop_recording(camera_num):
         #camera.camera.stop_encoder(encoder_video)  # Zatrzymuje nagrywanie do pliku, ale nie streaming
 
         recording_output.stop()
-        #encoder = camera.camera._encoders[0]
+        encoder = list(camera.camera._encoders)[0]
         encoder.output.remove(recording_output)
         return jsonify(success=True, message="Recording stopped successfully.")
             
