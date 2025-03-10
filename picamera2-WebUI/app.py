@@ -732,7 +732,7 @@ def start_recording(camera_num):
             return jsonify(success=False, message="Camera not found.")
 
         # Określ katalog zapisu
-        save_directory = "/home/kuklok/Desktop/Ortofotomap/picamera2-WebUI/static/gallery"
+        save_directory = "/home/kuklok/Desktop/"
 
         # Sprawdź, czy katalog istnieje; jeśli nie, utwórz go
         if not os.path.exists(save_directory):
@@ -755,14 +755,15 @@ def start_recording(camera_num):
 
         # Rozpocznij nagrywanie
         # encoder_video = MJPEGEncoder()
-        logging.info(f"Starting recording to: {output_path}")
 
         recording_output = FileOutput(output_path)
-
+        encoder = camera.camera._encoders[0]
         encoder.output.append(recording_output)
         recording_output.start()
 
         #camera.camera.start_recording(encoder_video, FileOutput(output_path))
+
+        logging.info(f"Starting recording to: {output_path}")
 
         logging.info(f"Recording started successfully. File saved to: {output_path}")
         return jsonify(success=True, message=f"Recording started successfully. File: {output_path}")
@@ -785,7 +786,8 @@ def stop_recording(camera_num):
         #camera.camera.stop_encoder(encoder_video)  # Zatrzymuje nagrywanie do pliku, ale nie streaming
 
         recording_output.stop()
-        camera.camera.encoder.remove(recording_output)
+        encoder = camera.camera._encoders[0]
+        encoder.output.remove(recording_output)
         return jsonify(success=True, message="Recording stopped successfully.")
             
     except Exception as e:
